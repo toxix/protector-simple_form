@@ -37,7 +37,7 @@ module Protector
               case find_input(attribute_name, options, &block).input_type
               when :select
                 options[:disabled] = true unless options[:disabled] == false
-              when :check_boxes
+              when :check_boxes, :boolean
                 if options[:input_html].present?
                   options[:input_html].merge(onclick: "return false")
                 else

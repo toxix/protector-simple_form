@@ -29,9 +29,10 @@ module Protector
         alias_method :input_without_monkey_patch, :input
         def input(attribute_name, options={}, &block)
           if @object.respond_to?(:protector_subject?) && @object.protector_subject?
+            protector_attribute = options[:protector_attribute] || attribute_name
             if options[:protector_readonly] != false && (
-              (@object.persisted? && !@object.can?(:update, attribute_name)) ||
-              (@object.new_record? && !@object.can?(:create, attribute_name))
+              (@object.persisted? && !@object.can?(:update, protector_attribute)) ||
+              (@object.new_record? && !@object.can?(:create, protector_attribute))
               )
               case find_input(attribute_name, options, &block).input_type
               when :select

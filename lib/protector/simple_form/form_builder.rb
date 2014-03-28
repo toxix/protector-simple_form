@@ -25,6 +25,33 @@ module Protector
           
           association_without_monkey_patch association, options, &block
         end
+
+        alias_method :input_without_monkey_patch, :input
+        def input(attribute_name, options={}, &block)
+          if @object.respond_to?(:protector_subject?) && @object.protector_subject?
+            if options[:protector_readonly] != false && (
+              (@object.persisted? && !@object.can?(:update, attribute_name)) ||
+              (@object.new_record? && !@object.can?(:create, attribute_name))
+              )
+              case find_input(attribute_name, options, &block).input_type
+              when :select
+                options[:disabled] = true unless options[:disabled] == false
+              when :check_boxes
+                if options[:input_html].present?
+                  options[:input_html].merge(onclick: "return false")
+                else
+                  options[:input_html] = {onclick: "return false"}
+                end
+                options[:item_wrapper_class] = "#{options[:item_wrapper_class]} readonly"
+              else
+                options[:readonly] = true unless options[:readonly] == false
+              end
+            end
+          end
+
+          input_without_monkey_patch attribute_name, options, &block
+        end
+ 
       end
     end
   end

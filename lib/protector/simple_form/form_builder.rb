@@ -35,7 +35,7 @@ module Protector
               (@object.new_record? && !@object.can?(:create, protector_attribute))
               )
               case find_input(attribute_name, options, &block).input_type
-              when :select
+              when :select, :text
                 options[:disabled] = true unless options[:disabled] == false
               when :check_boxes, :boolean
                 if options[:input_html].present?
